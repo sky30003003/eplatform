@@ -10,6 +10,7 @@ import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import DashboardPage from '../pages/dashboard/DashboardPage';
 import OrganizationsPage from '../pages/organizations/OrganizationsPage';
+import MembersPage from '../pages/members/MembersPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import { UserType } from '../types/user';
 import { 
@@ -123,6 +124,14 @@ export default function Router() {
           element: (
             <RoleGuard roles={ROUTE_PERMISSIONS[ROUTES.ORGANIZATIONS]}>
               <OrganizationsPage />
+            </RoleGuard>
+          ),
+        },
+        {
+          path: getRelativePath(ROUTES.MEMBERS),
+          element: (
+            <RoleGuard roles={ROUTE_PERMISSIONS[ROUTES.MEMBERS]}>
+              <MembersPage />
             </RoleGuard>
           ),
         },

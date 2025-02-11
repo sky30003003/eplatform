@@ -1,4 +1,4 @@
-import { Dashboard as DashboardIcon, Business as BusinessIcon } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Business as BusinessIcon, People as PeopleIcon } from '@mui/icons-material';
 import { ROUTES, ROUTE_PERMISSIONS } from './routes.config';
 import { UserType } from '../types/user';
 
@@ -21,5 +21,11 @@ export const MENU_ITEMS: readonly MenuItem[] = [
     path: ROUTES.ORGANIZATIONS,
     icon: <BusinessIcon />,
     roles: ROUTE_PERMISSIONS[ROUTES.ORGANIZATIONS],
+  },
+  {
+    title: 'menu.members',
+    path: ROUTES.MEMBERS,
+    icon: <PeopleIcon />,
+    roles: ROUTE_PERMISSIONS[ROUTES.MEMBERS],
   },
 ]; 

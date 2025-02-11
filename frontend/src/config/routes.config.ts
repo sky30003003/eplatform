@@ -8,6 +8,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   DASHBOARD_APP: '/dashboard/app',
   ORGANIZATIONS: '/dashboard/organizations',
+  MEMBERS: '/dashboard/members',
   PROFILE: '/dashboard/profile',
 } as const;
 
@@ -15,6 +16,7 @@ export type AppRoute = keyof typeof ROUTES;
 
 export const ROUTE_PERMISSIONS = {
   [ROUTES.ORGANIZATIONS]: [UserType.SUPERADMIN],
+  [ROUTES.MEMBERS]: [UserType.SUPERADMIN],
   [ROUTES.DASHBOARD_APP]: [
     UserType.SUPERADMIN,
     UserType.ORGADMIN,

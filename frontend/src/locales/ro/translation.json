@@ -20,7 +20,8 @@
   },
   "menu": {
     "dashboard": "Panou de Control",
-    "organizations": "Organizații"
+    "organizations": "Organizații",
+    "members": "Membri"
   },
   "dashboard": {
     "welcome": "Bine ai venit, {{name}}!",
@@ -125,6 +126,34 @@
       "updateError": "A apărut o eroare la actualizarea administratorului organizației",
       "deleteError": "A apărut o eroare la ștergerea administratorului organizației",
       "generic": "A apărut o eroare. Vă rugăm să încercați din nou."
+    }
+  },
+  "members": {
+    "title": "Membri",
+    "table": {
+      "name": "Nume",
+      "email": "Email",
+      "phone": "Telefon",
+      "organization": "Organizație",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Activ",
+      "inactive": "Inactiv",
+      "blocked": "Blocat"
+    },
+    "messages": {
+      "noMembers": "Nu există membri",
+      "deleteSuccess": "Membrul a fost șters cu succes"
+    },
+    "errors": {
+      "fetchError": "Eroare la încărcarea membrilor",
+      "updateError": "Eroare la actualizarea membrului",
+      "deleteError": "Eroare la ștergerea membrului"
+    },
+    "deleteDialog": {
+      "title": "Ștergere membru",
+      "content": "Sunteți sigur că doriți să ștergeți acest membru? Această acțiune nu poate fi anulată."
     }
   }
 } 

@@ -1,3 +1,5 @@
+import { Organization } from './organization';
+
 export enum UserType {
   SUPERADMIN = 'SUPERADMIN',
   ORGADMIN = 'ORGADMIN',
@@ -22,6 +24,7 @@ export interface User {
   userType: UserType;
   status: UserStatus;
   organizationId?: string;
+  organization?: Organization;
   isEmailVerified: boolean;
   createdAt: string;
   updatedAt: string;
