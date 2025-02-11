@@ -5,6 +5,7 @@ node_modules/
 
 # Testing
 coverage/
+.nyc_output/
 
 # Production
 build/
@@ -20,9 +21,19 @@ out/
 
 # IDE
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 *.swp
 *.swo
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
 # Logs
 logs
@@ -30,6 +41,8 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # OS
 .DS_Store
@@ -39,4 +52,21 @@ Thumbs.db
 *.tsbuildinfo
 
 # Vite
-.vite/ 
+.vite/
+
+# Temp files
+.temp/
+.tmp/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Nest.js specific
+/dist
+/build 
