@@ -1,0 +1,80 @@
+{
+  "common": {
+    "actions": "Actions",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "success": "Success",
+    "error": "Error"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "organizations": "Organizations"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}!",
+    "cards": {
+      "pendingDocuments": {
+        "title": "Pending Documents",
+        "description": "Documents awaiting your signature"
+      },
+      "signedDocuments": {
+        "title": "Signed Documents",
+        "description": "Documents signed in the last month"
+      },
+      "rejectedDocuments": {
+        "title": "Rejected Documents",
+        "description": "Rejected or expired documents"
+      }
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "noActivity": "No recent activity"
+    }
+  },
+  "organizations": {
+    "title": "Organizations",
+    "addNew": "Add Organization",
+    "editTitle": "Edit Organization",
+    "manageAdmin": "Manage Organization Admin",
+    "editOrg": "Edit Organization",
+    "deleteOrg": "Delete Organization",
+    "form": {
+      "name": "Organization Name",
+      "email": "Email",
+      "phone": "Phone",
+      "companyCode": "Company Code",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email",
+      "phoneRequired": "Phone number is required",
+      "phoneDigits": "Phone number can only contain digits",
+      "phoneLength": "Phone number must be at least 10 digits",
+      "companyCodeRequired": "Company code is required"
+    },
+    "messages": {
+      "createSuccess": "Organization created successfully",
+      "updateSuccess": "Organization updated successfully",
+      "deleteSuccess": "Organization deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete this organization?",
+      "error": "An error occurred"
+    }
+  }
+} 

@@ -1,0 +1,82 @@
+{
+  "common": {
+    "actions": "Acțiuni",
+    "add": "Adaugă",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "loading": "Se încarcă...",
+    "confirm": "Confirmare",
+    "success": "Succes",
+    "error": "Eroare"
+  },
+  "auth": {
+    "login": "Autentificare",
+    "register": "Înregistrare",
+    "logout": "Deconectare",
+    "profile": "Profil"
+  },
+  "menu": {
+    "dashboard": "Panou de Control",
+    "organizations": "Organizații"
+  },
+  "dashboard": {
+    "welcome": "Bine ai venit, {{name}}!",
+    "cards": {
+      "pendingDocuments": {
+        "title": "Documente în așteptare",
+        "description": "Documente care necesită semnătura ta"
+      },
+      "signedDocuments": {
+        "title": "Documente semnate",
+        "description": "Documente semnate în ultima lună"
+      },
+      "rejectedDocuments": {
+        "title": "Documente respinse",
+        "description": "Documente respinse sau expirate"
+      }
+    },
+    "recentActivity": {
+      "title": "Activitate recentă",
+      "noActivity": "Nu există activitate recentă"
+    }
+  },
+  "organizations": {
+    "title": "Organizații",
+    "addNew": "Adaugă Organizație",
+    "editTitle": "Editează Organizația",
+    "manageAdmin": "Gestionează Admin Organizație",
+    "editOrg": "Editează Organizație",
+    "deleteOrg": "Șterge Organizație",
+    "form": {
+      "name": "Nume Organizație",
+      "email": "Email",
+      "phone": "Telefon",
+      "companyCode": "Cod Fiscal",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Activ",
+      "inactive": "Inactiv"
+    },
+    "validation": {
+      "nameRequired": "Numele este obligatoriu",
+      "emailRequired": "Email-ul este obligatoriu",
+      "emailInvalid": "Email invalid",
+      "phoneRequired": "Numărul de telefon este obligatoriu",
+      "phoneDigits": "Numărul de telefon poate conține doar cifre",
+      "phoneLength": "Numărul de telefon trebuie să aibă minim 10 cifre",
+      "companyCodeRequired": "Codul fiscal este obligatoriu"
+    },
+    "messages": {
+      "createSuccess": "Organizația a fost creată cu succes",
+      "updateSuccess": "Organizația a fost actualizată cu succes",
+      "deleteSuccess": "Organizația a fost ștearsă cu succes",
+      "deleteConfirm": "Sigur doriți să ștergeți această organizație?",
+      "error": "A apărut o eroare la încărcarea organizațiilor",
+      "noData": "Nu s-au putut încărca datele organizațiilor",
+      "noOrganizations": "Nu există organizații înregistrate"
+    }
+  }
+} 
