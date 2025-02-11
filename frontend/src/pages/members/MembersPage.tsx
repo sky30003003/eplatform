@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { PageHeader } from '../../components/common/PageHeader';
 import { DeleteConfirmationDialog } from '../../components/common/DeleteConfirmationDialog';
+import { OrgAdminDialog } from '../../components/organization/OrgAdminDialog';
 import { memberService } from '../../services/memberService';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserType, UserStatus } from '../../types/user';
@@ -16,6 +17,8 @@ export default function MembersPage() {
   const { enqueueSnackbar } = useSnackbar();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const { data: members, isLoading, error, refetch } = useQuery({
     queryKey: ['members', 'orgadmins'],
@@ -40,6 +43,17 @@ export default function MembersPage() {
   const openDeleteDialog = (memberId: string) => {
     setSelectedMemberId(memberId);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleEdit = (member: any) => {
+    setSelectedMember(member);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    refetch();
+    setIsEditDialogOpen(false);
+    setSelectedMember(null);
   };
 
   if (isLoading) {
@@ -103,7 +117,7 @@ export default function MembersPage() {
                           <Tooltip title={t('common.edit')}>
                             <IconButton
                               size="small"
-                              onClick={() => {}} // TODO: Implementare editare
+                              onClick={() => handleEdit(member)}
                             >
                               <EditIcon fontSize="small" />
                             </IconButton>
@@ -135,6 +149,16 @@ export default function MembersPage() {
         title={t('members.deleteDialog.title')}
         content={t('members.deleteDialog.content')}
       />
+
+      {selectedMember && (
+        <OrgAdminDialog
+          open={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          organizationId={selectedMember.organizationId}
+          orgAdmin={selectedMember}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </Container>
   );
 } 
