@@ -23,10 +23,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { UserType } from '../types/user';
 import LanguageSelector from '../components/LanguageSelector';
 import { MENU_ITEMS } from '../config/menu.config';
+import { PageFooter } from '../components/common/PageFooter';
 
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
 const DRAWER_WIDTH = 280;
+const FOOTER_HEIGHT = 64;
 
 const StyledRoot = styled('div')({
   display: 'flex',
@@ -39,7 +41,7 @@ const Main = styled('div')(({ theme }) => ({
   overflow: 'auto',
   minHeight: '100%',
   paddingTop: APP_BAR_MOBILE + 24,
-  paddingBottom: theme.spacing(10),
+  paddingBottom: FOOTER_HEIGHT + 24,
   [theme.breakpoints.up('lg')]: {
     paddingTop: APP_BAR_DESKTOP + 24,
     paddingLeft: theme.spacing(2),
@@ -155,6 +157,8 @@ export default function DashboardLayout() {
       <Main>
         <Outlet />
       </Main>
+
+      <PageFooter />
     </StyledRoot>
   );
 } 

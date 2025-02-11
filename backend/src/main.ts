@@ -1,20 +1,41 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
+import * as csurf from 'csurf';
 import { AppModule } from './app.module';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Configurare CORS
+  // Security middleware
+  app.use(helmet());
+  app.use(cookieParser());
+  
+  // CORS configuration
   app.enableCors({
-    origin: 'http://localhost:5173',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN'],
   });
   
-  // Validare globală
-  app.useGlobalPipes(new ValidationPipe());
+  // CSRF protection
+  app.use(csurf({
+    cookie: {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production'
+    }
+  }));
   
-  await app.listen(process.env.PORT ?? 3000);
+  // Global validation pipe
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true
+  }));
+
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

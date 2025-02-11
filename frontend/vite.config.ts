@@ -13,30 +13,14 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
-    hmr: {
-      protocol: 'ws',
-      host: 'localhost',
-      overlay: false
-    },
-    watch: {
-      usePolling: true
-    }
   },
   build: {
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            '@mui/material',
-            '@mui/icons-material',
-            '@tanstack/react-query'
-          ]
-        }
-      }
-    }
-  }
+  },
+  // Adăugăm configurare pentru rezolvarea modulelor
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
 })

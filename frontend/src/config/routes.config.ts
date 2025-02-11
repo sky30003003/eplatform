@@ -5,6 +5,7 @@ export const ROUTES = {
   REGISTER: '/register',
   RESET_PASSWORD: '/reset-password',
   VERIFY_EMAIL: '/verify-email',
+  CHANGE_PASSWORD: '/change-password',
   DASHBOARD: '/dashboard',
   DASHBOARD_APP: '/dashboard/app',
   ORGANIZATIONS: '/dashboard/organizations',
@@ -38,6 +39,7 @@ export const PUBLIC_ROUTES = [
   ROUTES.REGISTER,
   ROUTES.RESET_PASSWORD,
   ROUTES.VERIFY_EMAIL,
+  ROUTES.CHANGE_PASSWORD,
 ] as const;
 
 export const DEFAULT_AUTHENTICATED_ROUTE = ROUTES.DASHBOARD_APP;

@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UserType } from '../users/entities/user.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -85,5 +86,14 @@ export class AuthController {
     @Request() req
   ) {
     return this.authService.deleteUser(id, req.user);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Request() req,
+    @Body() dto: ChangePasswordDto
+  ) {
+    return this.authService.changePassword(req.user.id, dto);
   }
 } 

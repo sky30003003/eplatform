@@ -55,7 +55,8 @@
       "email": "Email",
       "phone": "Phone",
       "companyCode": "Company Code",
-      "status": "Status"
+      "status": "Status",
+      "orgAdmin": "orgAdmin"
     },
     "status": {
       "active": "Active",

@@ -10,6 +10,7 @@ import {
   InputAdornment,
   TextField,
   Button,
+  CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -31,6 +32,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formik.isSubmitting) return;
+    await formik.submitForm();
+  };
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -39,11 +46,13 @@ export default function LoginPage() {
     validationSchema: LoginSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
+        setError('');
+        setSubmitting(true);
         await login(values.email, values.password);
         navigate(from, { replace: true });
-      } catch (error) {
-        console.error('Login error:', error);
-        setError('Credențiale invalide');
+      } catch (err) {
+        console.error('Login error:', err);
+        setError(err instanceof Error ? err.message : 'A apărut o eroare la autentificare');
       } finally {
         setSubmitting(false);
       }
@@ -59,9 +68,21 @@ export default function LoginPage() {
       title="Autentificare"
       description="Introduceți datele de autentificare pentru a continua"
     >
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <Stack spacing={3}>
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && (
+            <Alert 
+              severity="error" 
+              onClose={() => setError('')}
+              sx={{ 
+                '& .MuiAlert-message': { 
+                  width: '100%' 
+                } 
+              }}
+            >
+              {error}
+            </Alert>
+          )}
 
           <TextField
             fullWidth
@@ -71,6 +92,7 @@ export default function LoginPage() {
             {...formik.getFieldProps('email')}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
+            disabled={formik.isSubmitting}
           />
 
           <TextField
@@ -81,7 +103,12 @@ export default function LoginPage() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
+                  <IconButton 
+                    onClick={handleShowPassword} 
+                    edge="end"
+                    disabled={formik.isSubmitting}
+                    type="button"
+                  >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
@@ -90,6 +117,7 @@ export default function LoginPage() {
             {...formik.getFieldProps('password')}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
+            disabled={formik.isSubmitting}
           />
         </Stack>
 
@@ -99,7 +127,17 @@ export default function LoginPage() {
           justifyContent="space-between"
           sx={{ my: 2 }}
         >
-          <Link component={RouterLink} variant="subtitle2" to="/reset-password">
+          <Link 
+            component={RouterLink} 
+            variant="subtitle2" 
+            to="/reset-password"
+            sx={{ 
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline'
+              }
+            }}
+          >
             Ai uitat parola?
           </Link>
         </Stack>
@@ -110,8 +148,23 @@ export default function LoginPage() {
           type="submit"
           variant="contained"
           disabled={formik.isSubmitting}
+          sx={{
+            position: 'relative',
+            '& .MuiCircularProgress-root': {
+              marginLeft: 1
+            }
+          }}
         >
           Autentificare
+          {formik.isSubmitting && (
+            <CircularProgress
+              size={24}
+              sx={{
+                position: 'absolute',
+                right: 16,
+              }}
+            />
+          )}
         </Button>
 
         <Stack
@@ -120,7 +173,17 @@ export default function LoginPage() {
           justifyContent="center"
           sx={{ mt: 3 }}
         >
-          <Link component={RouterLink} variant="subtitle2" to="/register">
+          <Link 
+            component={RouterLink} 
+            variant="subtitle2" 
+            to="/register"
+            sx={{ 
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline'
+              }
+            }}
+          >
             Nu ai cont? Înregistrează-te
           </Link>
         </Stack>

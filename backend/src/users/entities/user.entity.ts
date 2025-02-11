@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Organization } from '../../organizations/entities/organization.entity';
+import { RefreshToken } from '../../auth/entities/refresh-token.entity';
+import { VerificationToken } from '../../auth/entities/verification-token.entity';
 
 export enum UserType {
   SUPERADMIN = 'SUPERADMIN',
@@ -42,7 +44,7 @@ export class User {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   personalCode: string;
 
   @Column({
@@ -61,9 +63,18 @@ export class User {
   @Column({ default: false })
   isEmailVerified: boolean;
 
+  @Column({ default: true })
+  isFirstLogin: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => RefreshToken, token => token.user)
+  refreshTokens: RefreshToken[];
+
+  @OneToMany(() => VerificationToken, token => token.user)
+  verificationTokens: VerificationToken[];
 } 

@@ -124,16 +124,66 @@ frontend/
 ## 4. Securitate
 
 ### 4.1 Autentificare și Autorizare
-- JWT cu expirare
-- Role-based access control
-- Session management
-- 2FA (opțional)
 
-### 4.2 Protecția Datelor
-- Criptare date sensibile
-- Audit logging
-- GDPR compliance
-- Backup strategy
+#### 4.1.1 JWT (JSON Web Tokens)
+- Token de acces cu durată scurtă (15 minute)
+- Token de refresh cu durată lungă (30 zile)
+- Validare completă a token-urilor:
+  - Verificare expirare
+  - Verificare data emiterii
+  - Verificare subject
+  - Validare semnătură
+
+#### 4.1.2 Rate Limiting
+- Limitare încercări de autentificare: 5 încercări / minut
+- Protecție împotriva atacurilor de tip brute force
+- Configurabil prin variabile de mediu
+
+### 4.2 Protecția CSRF și XSS
+
+#### 4.2.1 CSRF Protection
+- Token-uri CSRF generate pentru fiecare sesiune
+- Cookie-uri securizate cu flags:
+  - httpOnly: true
+  - sameSite: strict
+  - secure: true (în producție)
+
+#### 4.2.2 Headers de Securitate (Helmet)
+- Content-Security-Policy
+- X-Frame-Options
+- X-XSS-Protection
+- X-Content-Type-Options
+- Referrer-Policy
+
+### 4.3 Gestionare Sesiune
+
+#### 4.3.1 Token Management
+- Refresh automat al token-urilor înainte de expirare
+- Validare strictă la primirea noilor token-uri
+- Curățare completă la delogare:
+  - Ștergere token-uri
+  - Curățare localStorage și sessionStorage
+  - Invalidare sesiune server
+
+#### 4.3.2 CORS Configuration
+- Origin restricționat la domeniul frontend-ului
+- Metode HTTP permise configurate explicit
+- Headers permise strict definite
+- Credentials support pentru cookie-uri
+
+### 4.4 Validare și Sanitizare
+
+#### 4.4.1 Input Validation
+- Validare globală prin ValidationPipe
+- Whitelist pentru proprietăți permise
+- Transformare automată a tipurilor
+- Validare strictă a DTO-urilor
+
+#### 4.4.2 Database Security
+- Prepared statements pentru prevenirea SQL injection
+- Hashing parole cu Argon2
+- Audit logging pentru operații sensibile
+- Principle of least privilege pentru conexiuni DB
 
 ## 5. Scalabilitate
 

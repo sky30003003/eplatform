@@ -1,7 +1,7 @@
-import axios, { isAxiosError } from 'axios';
+import { isAxiosError } from 'axios';
+import { axiosInstance } from '../utils/axios';
 import { Organization, CreateOrganizationDto, UpdateOrganizationDto } from '../types/organization';
 import { User } from '../types/user';
-import axiosInstance from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api.config';
 import { generateTempPassword } from '../utils/password';
 import i18n from '../i18n';

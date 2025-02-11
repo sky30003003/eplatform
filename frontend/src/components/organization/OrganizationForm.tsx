@@ -18,7 +18,7 @@ interface OrganizationFormProps {
   onCancel: () => void;
 }
 
-export default function OrganizationForm({ organization, onSubmit, onCancel }: OrganizationFormProps) {
+export const OrganizationForm = ({ organization, onSubmit, onCancel }: OrganizationFormProps) => {
   const { t } = useTranslation();
 
   const validationSchema = Yup.object({
@@ -117,4 +117,4 @@ export default function OrganizationForm({ organization, onSubmit, onCancel }: O
       </form>
     </>
   );
-} 
+}; 

@@ -80,16 +80,25 @@ export const OrgAdminDialog: React.FC<OrgAdminDialogProps> = ({
 
   const handleClose = () => {
     setTempPassword(null);
+    formik.resetForm({
+      values: {
+        firstName: '',
+        lastName: '',
+        phone: '',
+        email: '',
+        personalCode: '',
+      }
+    });
     onClose();
   };
 
   const formik = useFormik({
     initialValues: {
-      firstName: orgAdmin?.firstName || '',
-      lastName: orgAdmin?.lastName || '',
-      phone: orgAdmin?.phone || '',
-      email: orgAdmin?.email || '',
-      personalCode: orgAdmin?.personalCode || '',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      personalCode: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -129,18 +138,22 @@ export const OrgAdminDialog: React.FC<OrgAdminDialogProps> = ({
   });
 
   useEffect(() => {
-    if (orgAdmin) {
-      formik.resetForm({
-        values: {
-          firstName: orgAdmin.firstName,
-          lastName: orgAdmin.lastName,
-          phone: orgAdmin.phone,
-          email: orgAdmin.email || '',
-          personalCode: orgAdmin.personalCode || '',
-        },
-      });
+    if (open) {
+      if (orgAdmin) {
+        formik.resetForm({
+          values: {
+            firstName: orgAdmin.firstName,
+            lastName: orgAdmin.lastName,
+            phone: orgAdmin.phone,
+            email: orgAdmin.email || '',
+            personalCode: orgAdmin.personalCode || '',
+          },
+        });
+      } else {
+        formik.resetForm();
+      }
     }
-  }, [orgAdmin]);
+  }, [open, orgAdmin]);
 
   const handleDelete = async () => {
     if (!orgAdmin) return;

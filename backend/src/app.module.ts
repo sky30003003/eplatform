@@ -12,6 +12,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,8 +24,9 @@ import { OrganizationsModule } from './organizations/organizations.module';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun: true,
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),

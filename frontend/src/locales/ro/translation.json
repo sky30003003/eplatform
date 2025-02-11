@@ -56,7 +56,8 @@
       "email": "Email",
       "phone": "Telefon",
       "companyCode": "Cod Fiscal",
-      "status": "Status"
+      "status": "Status",
+      "orgAdmin": "orgAdmin"
     },
     "status": {
       "active": "Activ",
@@ -130,17 +131,35 @@
   },
   "members": {
     "title": "Membri",
+    "addNew": "Adaugă Membru",
     "table": {
       "name": "Nume",
       "email": "Email",
       "phone": "Telefon",
-      "organization": "Organizație",
+      "type": "Tip Utilizator",
       "status": "Status"
     },
     "status": {
       "active": "Activ",
       "inactive": "Inactiv",
-      "blocked": "Blocat"
+      "blocked": "Blocat",
+      "pending_email_verification": "Verificare Email",
+      "pending_password_change": "Schimbare Parolă"
+    },
+    "labels": {
+      "firstLogin": "Prima Autentificare",
+      "unverifiedEmail": "Email Neverificat"
+    },
+    "tooltips": {
+      "pendingPasswordChange": "Utilizatorul trebuie să își schimbe parola la prima autentificare",
+      "pendingEmailVerification": "Utilizatorul trebuie să își verifice adresa de email"
+    },
+    "types": {
+      "superadmin": "Super Admin",
+      "orgadmin": "Admin Organizație",
+      "admin": "Administrator",
+      "collaborator": "Colaborator",
+      "employee": "Angajat"
     },
     "messages": {
       "noMembers": "Nu există membri",
@@ -155,5 +174,10 @@
       "title": "Ștergere membru",
       "content": "Sunteți sigur că doriți să ștergeți acest membru? Această acțiune nu poate fi anulată."
     }
+  },
+  "footer": {
+    "terms": "Termeni și Condiții",
+    "privacy": "Politica de Confidențialitate",
+    "contact": "Contact"
   }
 } 

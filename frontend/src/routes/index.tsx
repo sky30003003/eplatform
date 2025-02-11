@@ -8,6 +8,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 // Pages
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
+import ChangePasswordPage from '../pages/auth/ChangePasswordPage';
 import DashboardPage from '../pages/dashboard/DashboardPage';
 import OrganizationsPage from '../pages/organizations/OrganizationsPage';
 import MembersPage from '../pages/members/MembersPage';
@@ -105,6 +106,16 @@ export default function Router() {
             <RegisterPage />
           </AuthLayout>
         </GuestGuard>
+      ),
+    },
+    {
+      path: ROUTES.CHANGE_PASSWORD,
+      element: (
+        <AuthGuard>
+          <AuthLayout>
+            <ChangePasswordPage />
+          </AuthLayout>
+        </AuthGuard>
       ),
     },
     {

@@ -14,6 +14,7 @@ import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailService } from '../shared/services/email.service';
 import { USER_SELECT_FIELDS } from '../users/constants/user-select.fields';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 export type UserResponse = Omit<User, 'passwordHash'>;
 
@@ -83,7 +84,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersRepository.findOne({
       where: { email: loginDto.email },
-      select: { ...USER_SELECT_FIELDS, passwordHash: true }
+      select: { ...USER_SELECT_FIELDS, passwordHash: true, isFirstLogin: true }
     });
 
     if (!user) {
@@ -97,12 +98,21 @@ export class AuthService {
     }
 
     const tokens = await this.generateTokens(user);
+    
+    // Dacă este prima autentificare, actualizăm flag-ul
+    if (user.isFirstLogin) {
+      await this.usersRepository.update(user.id, { isFirstLogin: false });
+    }
+
     const { passwordHash: _, ...userWithoutPassword } = user;
 
     return {
       access_token: tokens.accessToken,
       refresh_token: tokens.refreshToken,
-      user: userWithoutPassword
+      user: {
+        ...userWithoutPassword,
+        isFirstLogin: user.isFirstLogin
+      }
     };
   }
 
@@ -255,7 +265,7 @@ export class AuthService {
     await this.verificationTokenRepository.update(tokenEntity.id, { isUsed: true });
   }
 
-  async createOrgAdmin(registerDto: RegisterDto): Promise<UserResponse> {
+  async createOrgAdmin(registerDto: RegisterDto): Promise<{ user: UserResponse; tempPassword: string }> {
     const existingUser = await this.usersRepository.findOne({
       where: { email: registerDto.email }
     });
@@ -264,20 +274,24 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
 
-    const passwordHash = await argon2.hash(Math.random().toString(36));
+    const tempPassword = Math.random().toString(36).slice(-8); // Generăm o parolă temporară de 8 caractere
+    const passwordHash = await argon2.hash(tempPassword);
 
     const user = this.usersRepository.create({
       ...registerDto,
       userType: UserType.ORGADMIN,
       passwordHash,
-      isEmailVerified: false
+      isEmailVerified: false,
+      isFirstLogin: true // Adăugăm flag-ul pentru prima autentificare
     });
 
     await this.usersRepository.save(user);
-    await this.requestPasswordReset({ email: user.email });
 
     const { passwordHash: _, ...result } = user;
-    return result;
+    return { 
+      user: result,
+      tempPassword 
+    };
   }
 
   async createUser(registerDto: RegisterDto, creator: CreatorUser): Promise<UserResponse> {
@@ -367,5 +381,27 @@ export class AuthService {
 
     // Acum putem șterge utilizatorul în siguranță
     await this.usersRepository.remove(user);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordHash = await argon2.hash(dto.newPassword);
+    await this.usersRepository.update(userId, { 
+      passwordHash,
+      isFirstLogin: false 
+    });
+
+    // Revocăm toate token-urile de refresh pentru a forța reautentificarea
+    await this.refreshTokenRepository.update(
+      { userId, isRevoked: false },
+      { isRevoked: true }
+    );
   }
 } 
