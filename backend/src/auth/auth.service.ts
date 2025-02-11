@@ -338,4 +338,34 @@ export class AuthService {
 
     return updatedUser;
   }
+
+  async deleteUser(userId: string, creator: CreatorUser): Promise<void> {
+    const user = await this.usersRepository.findOne({ 
+      where: { id: userId },
+      relations: ['organization']
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verificăm dacă creatorul are permisiunea să șteargă utilizatorul
+    if (creator.userType !== UserType.SUPERADMIN) {
+      if (creator.organizationId !== user.organizationId) {
+        throw new ForbiddenException('You can only delete users from your organization');
+      }
+      if (user.userType === UserType.ORGADMIN) {
+        throw new ForbiddenException('Only SUPERADMIN can delete organization admins');
+      }
+    }
+
+    // Ștergem mai întâi toate refresh token-urile asociate
+    await this.refreshTokenRepository.delete({ userId });
+    
+    // Ștergem toate verification token-urile asociate
+    await this.verificationTokenRepository.delete({ userId });
+
+    // Acum putem șterge utilizatorul în siguranță
+    await this.usersRepository.remove(user);
+  }
 } 

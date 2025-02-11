@@ -9,7 +9,8 @@
     "loading": "Se încarcă...",
     "confirm": "Confirmare",
     "success": "Succes",
-    "error": "Eroare"
+    "error": "Eroare",
+    "create": "Creează"
   },
   "auth": {
     "login": "Autentificare",
@@ -77,6 +78,53 @@
       "error": "A apărut o eroare la încărcarea organizațiilor",
       "noData": "Nu s-au putut încărca datele organizațiilor",
       "noOrganizations": "Nu există organizații înregistrate"
+    }
+  },
+  "orgAdmin": {
+    "title": "Administrator Organizație",
+    "create": "Creează Administrator Organizație",
+    "edit": "Editează Administrator Organizație",
+    "delete": "Șterge Administrator",
+    "form": {
+      "firstName": "Prenume",
+      "lastName": "Nume",
+      "phone": "Telefon",
+      "email": "Email",
+      "personalCode": "CNP/CUI"
+    },
+    "validation": {
+      "firstNameMin": "Prenumele trebuie să aibă minim 2 caractere",
+      "firstNameMax": "Prenumele nu poate depăși 50 de caractere",
+      "firstNameRequired": "Prenumele este obligatoriu",
+      "lastNameMin": "Numele trebuie să aibă minim 2 caractere",
+      "lastNameMax": "Numele nu poate depăși 50 de caractere",
+      "lastNameRequired": "Numele este obligatoriu",
+      "phoneInvalid": "Numărul de telefon nu este valid (ex: +40744565656 sau 0744565656)",
+      "phoneRequired": "Numărul de telefon este obligatoriu",
+      "emailInvalid": "Adresa de email nu este validă",
+      "emailFormat": "Adresa de email nu este într-un format valid",
+      "emailRequired": "Email-ul este obligatoriu",
+      "personalCodeFormat": "CNP/CUI poate conține doar litere și cifre",
+      "personalCodeMin": "CNP/CUI trebuie să aibă minim 8 caractere",
+      "personalCodeMax": "CNP/CUI nu poate depăși 13 caractere",
+      "personalCodeRequired": "CNP/CUI este obligatoriu"
+    },
+    "messages": {
+      "createSuccess": "Administratorul organizației a fost creat cu succes",
+      "updateSuccess": "Administratorul organizației a fost actualizat cu succes",
+      "deleteSuccess": "Administratorul organizației a fost șters cu succes",
+      "deleteConfirm": "Sunteți sigur că doriți să ștergeți acest administrator? Această acțiune nu poate fi anulată.",
+      "tempPassword": "Parola temporară generată pentru administrator este",
+      "tempPasswordNote": "Vă rugăm să transmiteți această parolă administratorului în mod securizat. La prima autentificare, administratorul va fi rugat să își schimbe parola."
+    },
+    "errors": {
+      "emailExists": "Există deja un utilizator cu această adresă de email în sistem",
+      "invalidData": "Date invalide. Verificați toate câmpurile și încercați din nou",
+      "noPermission": "Nu aveți permisiunea de a efectua această acțiune",
+      "createError": "A apărut o eroare la crearea administratorului organizației",
+      "updateError": "A apărut o eroare la actualizarea administratorului organizației",
+      "deleteError": "A apărut o eroare la ștergerea administratorului organizației",
+      "generic": "A apărut o eroare. Vă rugăm să încercați din nou."
     }
   }
 } 

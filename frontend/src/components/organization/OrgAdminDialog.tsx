@@ -11,6 +11,7 @@ import {
   Alert,
   Typography,
   Snackbar,
+  Stack,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -18,6 +19,7 @@ import { User } from '../../types/user';
 import { organizationService } from '../../services/organizationService';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { DeleteConfirmationDialog } from '../common/DeleteConfirmationDialog';
 
 interface OrgAdminDialogProps {
   open: boolean;
@@ -38,41 +40,42 @@ export const OrgAdminDialog: React.FC<OrgAdminDialogProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const isEdit = Boolean(orgAdmin);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   console.log('OrgAdmin data:', orgAdmin);
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string()
-      .min(2, 'Prenumele trebuie să aibă minim 2 caractere')
-      .max(50, 'Prenumele nu poate depăși 50 de caractere')
-      .required('Prenumele este obligatoriu'),
+      .min(2, t('orgAdmin.validation.firstNameMin'))
+      .max(50, t('orgAdmin.validation.firstNameMax'))
+      .required(t('orgAdmin.validation.firstNameRequired')),
     lastName: Yup.string()
-      .min(2, 'Numele trebuie să aibă minim 2 caractere')
-      .max(50, 'Numele nu poate depăși 50 de caractere')
-      .required('Numele este obligatoriu'),
+      .min(2, t('orgAdmin.validation.lastNameMin'))
+      .max(50, t('orgAdmin.validation.lastNameMax'))
+      .required(t('orgAdmin.validation.lastNameRequired')),
     phone: Yup.string()
       .matches(
         /^(\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\s|\.|\-)?([0-9]{3}(\s|\.|\-|)){2}$/,
-        'Numărul de telefon nu este valid (ex: +40744565656 sau 0744565656)'
+        t('orgAdmin.validation.phoneInvalid')
       )
-      .required('Numărul de telefon este obligatoriu'),
+      .required(t('orgAdmin.validation.phoneRequired')),
     email: isEdit 
       ? Yup.string()
       : Yup.string()
-          .email('Adresa de email nu este validă')
+          .email(t('orgAdmin.validation.emailInvalid'))
           .matches(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            'Adresa de email nu este într-un format valid'
+            t('orgAdmin.validation.emailFormat')
           )
-          .required('Email-ul este obligatoriu'),
+          .required(t('orgAdmin.validation.emailRequired')),
     personalCode: Yup.string()
       .matches(
         /^[a-zA-Z0-9]+$/,
-        'CNP/CUI poate conține doar litere și cifre'
+        t('orgAdmin.validation.personalCodeFormat')
       )
-      .min(8, 'CNP/CUI trebuie să aibă minim 8 caractere')
-      .max(13, 'CNP/CUI nu poate depăși 13 caractere')
-      .required('CNP/CUI este obligatoriu'),
+      .min(8, t('orgAdmin.validation.personalCodeMin'))
+      .max(13, t('orgAdmin.validation.personalCodeMax'))
+      .required(t('orgAdmin.validation.personalCodeRequired')),
   });
 
   const handleClose = () => {
@@ -93,31 +96,34 @@ export const OrgAdminDialog: React.FC<OrgAdminDialogProps> = ({
       console.log('Form values:', values);
       try {
         if (isEdit && orgAdmin) {
-          await organizationService.updateOrgAdmin(orgAdmin.id, {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            phone: values.phone,
-            personalCode: values.personalCode,
-          });
-          enqueueSnackbar('Admin organizație actualizat cu succes', { variant: 'success' });
+          await organizationService.updateOrgAdmin(orgAdmin.id, values);
+          enqueueSnackbar(t('orgAdmin.messages.updateSuccess'), { variant: 'success' });
         } else {
-          const result = await organizationService.createOrgAdmin(organizationId, {
-            email: values.email,
-            firstName: values.firstName,
-            lastName: values.lastName,
-            phone: values.phone,
-            personalCode: values.personalCode
-          });
-          setTempPassword(result.tempPassword);
-          enqueueSnackbar('Admin organizație creat cu succes', { variant: 'success' });
+          const result = await organizationService.createOrgAdmin(organizationId, values);
+          enqueueSnackbar(
+            `${t('orgAdmin.messages.createSuccess')}. ${t('orgAdmin.messages.tempPassword')} ${result.tempPassword}`,
+            { 
+              variant: 'success',
+              autoHideDuration: 10000,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center'
+              }
+            }
+          );
         }
         onSuccess();
+        onClose();
       } catch (error: any) {
         console.error('Error in OrgAdminDialog:', error);
-        enqueueSnackbar(
-          error.response?.data?.message || 'A apărut o eroare. Vă rugăm să încercați din nou.',
-          { variant: 'error' }
-        );
+        enqueueSnackbar(error.message, { 
+          variant: 'error',
+          autoHideDuration: 6000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center'
+          }
+        });
       }
     },
   });
@@ -136,128 +142,155 @@ export const OrgAdminDialog: React.FC<OrgAdminDialogProps> = ({
     }
   }, [orgAdmin]);
 
+  const handleDelete = async () => {
+    if (!orgAdmin) return;
+    
+    try {
+      await organizationService.deleteOrgAdmin(orgAdmin.id);
+      enqueueSnackbar(t('orgAdmin.messages.deleteSuccess'), { variant: 'success' });
+      onSuccess();
+      onClose();
+    } catch (error) {
+      enqueueSnackbar(t('orgAdmin.errors.deleteError'), { variant: 'error' });
+    }
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleClose} 
-      maxWidth="sm" 
-      fullWidth
-      disableEscapeKeyDown={Boolean(tempPassword)}
-    >
-      <DialogTitle>
-        {isEdit ? 'Editare Admin Organizație' : 'Creare Admin Organizație'}
-        {isEdit && orgAdmin && (
-          <Typography 
-            component="div"
-            variant="subtitle2" 
-            color="text.secondary" 
-            sx={{ mt: 1 }}
-          >
-            {orgAdmin.email}
-          </Typography>
-        )}
-      </DialogTitle>
-      <form onSubmit={formik.handleSubmit}>
-        <DialogContent>
-          {tempPassword ? (
-            <Box sx={{ textAlign: 'center', py: 2 }}>
-              <Alert severity="success" sx={{ mb: 2 }}>
-                Admin-ul organizației a fost creat cu succes!
-              </Alert>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                Parola temporară generată pentru admin este:
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{
-                  p: 2,
-                  bgcolor: 'background.paper',
-                  borderRadius: 1,
-                  fontFamily: 'monospace',
-                  wordBreak: 'break-all'
-                }}
-              >
-                {tempPassword}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Vă rugăm să transmiteți această parolă admin-ului în mod securizat.
-                La prima autentificare, admin-ul va fi rugat să își schimbe parola.
-              </Typography>
-            </Box>
-          ) : (
-            <Box display="grid" gap={2}>
-              <TextField
-                fullWidth
-                name="firstName"
-                label="Prenume"
-                value={formik.values.firstName}
-                onChange={formik.handleChange}
-                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                helperText={formik.touched.firstName && formik.errors.firstName}
-              />
-              <TextField
-                fullWidth
-                name="lastName"
-                label="Nume"
-                value={formik.values.lastName}
-                onChange={formik.handleChange}
-                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                helperText={formik.touched.lastName && formik.errors.lastName}
-              />
-              <TextField
-                fullWidth
-                name="phone"
-                label="Telefon"
-                placeholder="+40744565656"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
-                error={formik.touched.phone && Boolean(formik.errors.phone)}
-                helperText={formik.touched.phone && formik.errors.phone}
-              />
-              {!isEdit ? (
+    <>
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth="sm" 
+        fullWidth
+        disableEscapeKeyDown={Boolean(tempPassword)}
+      >
+        <DialogTitle>
+          {isEdit ? t('orgAdmin.edit') : t('orgAdmin.create')}
+          {isEdit && orgAdmin && (
+            <Typography 
+              component="div"
+              variant="subtitle2" 
+              color="text.secondary" 
+              sx={{ mt: 1 }}
+            >
+              {orgAdmin.email}
+            </Typography>
+          )}
+        </DialogTitle>
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            {tempPassword ? (
+              <Box sx={{ textAlign: 'center', py: 2 }}>
+                <Alert severity="success" sx={{ mb: 2 }}>
+                  {t('orgAdmin.messages.createSuccess')}
+                </Alert>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {t('orgAdmin.messages.tempPassword')}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    p: 2,
+                    bgcolor: 'background.paper',
+                    borderRadius: 1,
+                    fontFamily: 'monospace',
+                    wordBreak: 'break-all'
+                  }}
+                >
+                  {tempPassword}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                  {t('orgAdmin.messages.tempPasswordNote')}
+                </Typography>
+              </Box>
+            ) : (
+              <Box display="grid" gap={2}>
                 <TextField
                   fullWidth
-                  name="email"
-                  label="Email"
-                  placeholder="exemplu@domeniu.ro"
-                  value={formik.values.email}
+                  name="firstName"
+                  label={t('orgAdmin.form.firstName')}
+                  value={formik.values.firstName}
                   onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                  helperText={formik.touched.firstName && formik.errors.firstName}
                 />
-              ) : null}
-              <TextField
-                fullWidth
-                name="personalCode"
-                label="CNP/CUI"
-                value={formik.values.personalCode}
-                onChange={formik.handleChange}
-                error={formik.touched.personalCode && Boolean(formik.errors.personalCode)}
-                helperText={formik.touched.personalCode && formik.errors.personalCode}
-              />
+                <TextField
+                  fullWidth
+                  name="lastName"
+                  label={t('orgAdmin.form.lastName')}
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                  helperText={formik.touched.lastName && formik.errors.lastName}
+                />
+                <TextField
+                  fullWidth
+                  name="phone"
+                  label={t('orgAdmin.form.phone')}
+                  placeholder="+40744565656"
+                  value={formik.values.phone}
+                  onChange={formik.handleChange}
+                  error={formik.touched.phone && Boolean(formik.errors.phone)}
+                  helperText={formik.touched.phone && formik.errors.phone}
+                />
+                {!isEdit ? (
+                  <TextField
+                    fullWidth
+                    name="email"
+                    label={t('orgAdmin.form.email')}
+                    placeholder="exemplu@domeniu.ro"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                  />
+                ) : null}
+                <TextField
+                  fullWidth
+                  name="personalCode"
+                  label={t('orgAdmin.form.personalCode')}
+                  value={formik.values.personalCode}
+                  onChange={formik.handleChange}
+                  error={formik.touched.personalCode && Boolean(formik.errors.personalCode)}
+                  helperText={formik.touched.personalCode && formik.errors.personalCode}
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              {orgAdmin && (
+                <Button
+                  color="error"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  {t('orgAdmin.delete')}
+                </Button>
+              )}
+              <Box>
+                <Button onClick={handleClose}>{t('common.cancel')}</Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={formik.isSubmitting}
+                  startIcon={formik.isSubmitting ? <CircularProgress size={20} /> : null}
+                >
+                  {isEdit ? t('common.save') : t('common.create')}
+                </Button>
+              </Box>
             </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          {tempPassword ? (
-            <Button onClick={handleClose} variant="contained">
-              Închide
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleClose}>Anulare</Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={formik.isSubmitting}
-                startIcon={formik.isSubmitting ? <CircularProgress size={20} /> : null}
-              >
-                {isEdit ? 'Salvează' : 'Creează'}
-              </Button>
-            </>
-          )}
-        </DialogActions>
-      </form>
-    </Dialog>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title={t('orgAdmin.delete')}
+        content={t('orgAdmin.messages.deleteConfirm')}
+      />
+    </>
   );
 }; 

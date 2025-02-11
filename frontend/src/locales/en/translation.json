@@ -9,7 +9,8 @@
     "loading": "Loading...",
     "confirm": "Confirm",
     "success": "Success",
-    "error": "Error"
+    "error": "Error",
+    "create": "Create"
   },
   "auth": {
     "login": "Login",
@@ -74,7 +75,56 @@
       "updateSuccess": "Organization updated successfully",
       "deleteSuccess": "Organization deleted successfully",
       "deleteConfirm": "Are you sure you want to delete this organization?",
-      "error": "An error occurred"
+      "error": "An error occurred",
+      "noData": "Could not load organization data",
+      "noOrganizations": "No organizations registered"
+    }
+  },
+  "orgAdmin": {
+    "title": "Organization Admin",
+    "create": "Create Organization Admin",
+    "edit": "Edit Organization Admin",
+    "delete": "Delete Admin",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "email": "Email",
+      "personalCode": "Personal Code"
+    },
+    "validation": {
+      "firstNameMin": "First name must be at least 2 characters",
+      "firstNameMax": "First name cannot exceed 50 characters",
+      "firstNameRequired": "First name is required",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "lastNameMax": "Last name cannot exceed 50 characters",
+      "lastNameRequired": "Last name is required",
+      "phoneInvalid": "Invalid phone number (ex: +40744565656 or 0744565656)",
+      "phoneRequired": "Phone number is required",
+      "emailInvalid": "Invalid email address",
+      "emailFormat": "Email address is not in a valid format",
+      "emailRequired": "Email is required",
+      "personalCodeFormat": "Personal code can only contain letters and numbers",
+      "personalCodeMin": "Personal code must be at least 8 characters",
+      "personalCodeMax": "Personal code cannot exceed 13 characters",
+      "personalCodeRequired": "Personal code is required"
+    },
+    "messages": {
+      "createSuccess": "Organization admin created successfully",
+      "updateSuccess": "Organization admin updated successfully",
+      "deleteSuccess": "Organization admin deleted successfully",
+      "deleteConfirm": "Are you sure you want to delete this administrator? This action cannot be undone.",
+      "tempPassword": "The temporary password generated for the admin is:",
+      "tempPasswordNote": "Please send this password to the admin securely. On first login, the admin will be asked to change their password."
+    },
+    "errors": {
+      "emailExists": "A user with this email address already exists in the system",
+      "invalidData": "Invalid data. Please check all fields and try again",
+      "noPermission": "You don't have permission to perform this action",
+      "createError": "An error occurred while creating the organization admin",
+      "updateError": "An error occurred while updating the organization admin",
+      "deleteError": "An error occurred while deleting the organization admin",
+      "generic": "An error occurred. Please try again."
     }
   }
 } 

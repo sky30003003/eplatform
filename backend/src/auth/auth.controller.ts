@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Param, Patch, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -75,5 +75,15 @@ export class AuthController {
     @Request() req
   ) {
     return this.authService.updateUser(id, updateUserDto, req.user);
+  }
+
+  @Delete('delete-user/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SUPERADMIN, UserType.ORGADMIN)
+  async deleteUser(
+    @Param('id') id: string,
+    @Request() req
+  ) {
+    return this.authService.deleteUser(id, req.user);
   }
 } 

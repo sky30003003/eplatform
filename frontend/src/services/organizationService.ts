@@ -4,6 +4,7 @@ import { User } from '../types/user';
 import axiosInstance from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api.config';
 import { generateTempPassword } from '../utils/password';
+import i18n from '../i18n';
 
 interface CreateOrgAdminDto {
   email: string;
@@ -24,7 +25,7 @@ export const organizationService = {
     } catch (error) {
       console.error('Error in getAll organizations:', error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch organizations');
+        throw new Error(error.response?.data?.message || i18n.t('organizations.messages.noData'));
       }
       throw error;
     }
@@ -37,7 +38,7 @@ export const organizationService = {
     } catch (error) {
       console.error(`Error in getById organization ${id}:`, error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch organization');
+        throw new Error(error.response?.data?.message || i18n.t('organizations.messages.error'));
       }
       throw error;
     }
@@ -50,7 +51,7 @@ export const organizationService = {
     } catch (error) {
       console.error('Error in create organization:', error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to create organization');
+        throw new Error(error.response?.data?.message || i18n.t('organizations.messages.error'));
       }
       throw error;
     }
@@ -63,7 +64,7 @@ export const organizationService = {
     } catch (error) {
       console.error(`Error in update organization ${id}:`, error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to update organization');
+        throw new Error(error.response?.data?.message || i18n.t('organizations.messages.error'));
       }
       throw error;
     }
@@ -75,7 +76,7 @@ export const organizationService = {
     } catch (error) {
       console.error(`Error in delete organization ${id}:`, error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to delete organization');
+        throw new Error(error.response?.data?.message || i18n.t('organizations.messages.error'));
       }
       throw error;
     }
@@ -84,7 +85,6 @@ export const organizationService = {
   getOrgAdmin: async (organizationId: string): Promise<User | null> => {
     try {
       const response = await axiosInstance.get(API_ENDPOINTS.ORGANIZATIONS.GET_ADMIN(organizationId));
-      console.log('GetOrgAdmin response:', response.data);
       return response.data;
     } catch (error) {
       console.error(`Error in getOrgAdmin for organization ${organizationId}:`, error);
@@ -92,7 +92,7 @@ export const organizationService = {
         if (error.response?.status === 404) {
           return null;
         }
-        throw new Error(error.response?.data?.message || 'Failed to fetch organization admin');
+        throw new Error(error.response?.data?.message || i18n.t('orgAdmin.errors.generic'));
       }
       throw error;
     }
@@ -117,9 +117,20 @@ export const organizationService = {
     } catch (error) {
       console.error('Error in createOrgAdmin:', error);
       if (isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || 'Failed to create organization admin';
         console.error('Error details:', error.response?.data);
-        throw new Error(errorMessage);
+        
+        // Mapăm codurile de eroare la mesaje specifice din i18n
+        if (error.response?.status === 409) {
+          throw new Error(i18n.t('orgAdmin.errors.emailExists'));
+        }
+        if (error.response?.status === 400) {
+          throw new Error(i18n.t('orgAdmin.errors.invalidData'));
+        }
+        if (error.response?.status === 403) {
+          throw new Error(i18n.t('orgAdmin.errors.noPermission'));
+        }
+        
+        throw new Error(error.response?.data?.message || i18n.t('orgAdmin.errors.createError'));
       }
       throw error;
     }
@@ -137,7 +148,19 @@ export const organizationService = {
     } catch (error) {
       console.error(`Error in updateOrgAdmin for user ${userId}:`, error);
       if (isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to update organization admin');
+        throw new Error(error.response?.data?.message || i18n.t('orgAdmin.errors.updateError'));
+      }
+      throw error;
+    }
+  },
+
+  deleteOrgAdmin: async (userId: string): Promise<void> => {
+    try {
+      await axiosInstance.delete(API_ENDPOINTS.AUTH.DELETE_USER(userId));
+    } catch (error) {
+      console.error(`Error in deleteOrgAdmin for user ${userId}:`, error);
+      if (isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || i18n.t('orgAdmin.errors.deleteError'));
       }
       throw error;
     }

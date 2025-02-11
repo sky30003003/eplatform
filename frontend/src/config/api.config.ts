@@ -10,7 +10,8 @@ export const API_ENDPOINTS = {
     VERIFY_EMAIL: '/auth/verify-email',
     CREATE_ORGADMIN: '/auth/create-orgadmin',
     CREATE_USER: '/auth/create-user',
-    UPDATE_USER: (id: string) => `/auth/update-user/${id}`
+    UPDATE_USER: (id: string) => `/auth/update-user/${id}`,
+    DELETE_USER: (id: string) => `/auth/delete-user/${id}`
   },
   ORGANIZATIONS: {
     BASE: '/organizations',
