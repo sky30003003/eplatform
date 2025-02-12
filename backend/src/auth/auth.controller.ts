@@ -10,12 +10,14 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UserType } from '../users/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 încercări pe minut
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
@@ -95,5 +97,15 @@ export class AuthController {
     @Body() dto: ChangePasswordDto
   ) {
     return this.authService.changePassword(req.user.id, dto);
+  }
+
+  @Post('reset-admin-password/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SUPERADMIN, UserType.ORGADMIN)
+  async resetAdminPassword(
+    @Param('id') id: string,
+    @Request() req
+  ) {
+    return this.authService.resetAdminPassword(id, req.user);
   }
 } 

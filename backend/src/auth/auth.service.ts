@@ -15,6 +15,8 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailService } from '../shared/services/email.service';
 import { USER_SELECT_FIELDS } from '../users/constants/user-select.fields';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ConfigService } from '@nestjs/config';
+import { UserStatus } from '../users/entities/user.entity';
 
 export type UserResponse = Omit<User, 'passwordHash'>;
 
@@ -42,6 +44,7 @@ export class AuthService {
     private verificationTokenRepository: Repository<VerificationToken>,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private configService: ConfigService,
   ) {}
 
   async getCurrentUser(userId: string): Promise<UserResponse> {
@@ -84,17 +87,26 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersRepository.findOne({
       where: { email: loginDto.email },
-      select: { ...USER_SELECT_FIELDS, passwordHash: true, isFirstLogin: true }
+      select: { ...USER_SELECT_FIELDS, passwordHash: true, isFirstLogin: true, status: true }
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Credențiale invalide');
+    }
+
+    // Verificăm status-ul utilizatorului
+    if (user.status === UserStatus.BLOCKED) {
+      throw new ForbiddenException('Contul este blocat. Contactați administratorul');
+    }
+
+    if (user.status === UserStatus.INACTIVE) {
+      throw new ForbiddenException('Contul este inactiv. Contactați administratorul');
     }
 
     const isPasswordValid = await argon2.verify(user.passwordHash, loginDto.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Credențiale invalide');
     }
 
     const tokens = await this.generateTokens(user);
@@ -191,7 +203,8 @@ export class AuthService {
     // Generează token de resetare
     const token = uuidv4();
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // Expiră în 1 oră
+    const expirationHours = this.configService.get<number>('PASSWORD_RESET_TOKEN_EXPIRATION', 24);
+    expiresAt.setHours(expiresAt.getHours() + expirationHours);
 
     await this.verificationTokenRepository.save({
       userId: user.id,
@@ -232,7 +245,8 @@ export class AuthService {
   private async sendVerificationEmail(user: User): Promise<void> {
     const token = uuidv4();
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // Expiră în 24 ore
+    const expirationHours = this.configService.get<number>('EMAIL_VERIFICATION_TOKEN_EXPIRATION', 72);
+    expiresAt.setHours(expiresAt.getHours() + expirationHours);
 
     await this.verificationTokenRepository.save({
       userId: user.id,
@@ -403,5 +417,42 @@ export class AuthService {
       { userId, isRevoked: false },
       { isRevoked: true }
     );
+  }
+
+  async resetAdminPassword(userId: string, creator: CreatorUser): Promise<{ tempPassword: string }> {
+    // Verifică dacă utilizatorul există
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['organization']
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verifică permisiunile
+    if (creator.userType !== UserType.SUPERADMIN) {
+      if (creator.userType === UserType.ORGADMIN && user.organizationId !== creator.organizationId) {
+        throw new ForbiddenException('You can only reset passwords for users in your organization');
+      }
+    }
+
+    // Generează o parolă temporară
+    const tempPassword = Math.random().toString(36).slice(-8);
+    const passwordHash = await argon2.hash(tempPassword);
+
+    // Actualizează parola și setează isFirstLogin = true
+    await this.usersRepository.update(userId, { 
+      passwordHash,
+      isFirstLogin: true 
+    });
+
+    // Revocă toate token-urile de refresh pentru a forța reautentificarea
+    await this.refreshTokenRepository.update(
+      { userId, isRevoked: false },
+      { isRevoked: true }
+    );
+
+    return { tempPassword };
   }
 } 

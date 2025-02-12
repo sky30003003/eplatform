@@ -66,5 +66,18 @@ export const memberService = {
       }
       throw error;
     }
-  }
+  },
+
+  resetPassword: async (userId: string): Promise<string> => {
+    try {
+      const response = await axiosInstance.post(API_ENDPOINTS.AUTH.RESET_ADMIN_PASSWORD(userId));
+      return response.data.tempPassword;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      if (isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || i18n.t('members.errors.resetPasswordError'));
+      }
+      throw error;
+    }
+  },
 }; 

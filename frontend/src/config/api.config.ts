@@ -12,7 +12,8 @@ export const API_ENDPOINTS = {
     CREATE_USER: '/auth/create-user',
     UPDATE_USER: (id: string) => `/auth/update-user/${id}`,
     DELETE_USER: (id: string) => `/auth/delete-user/${id}`,
-    CHANGE_PASSWORD: '/auth/change-password'
+    CHANGE_PASSWORD: '/auth/change-password',
+    RESET_ADMIN_PASSWORD: (id: string) => `/auth/reset-admin-password/${id}`
   },
   ORGANIZATIONS: {
     BASE: '/organizations',

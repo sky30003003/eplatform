@@ -173,6 +173,18 @@
     "deleteDialog": {
       "title": "Ștergere membru",
       "content": "Sunteți sigur că doriți să ștergeți acest membru? Această acțiune nu poate fi anulată."
+    },
+    "actions": {
+      "resetPassword": "Resetează parola"
+    },
+    "resetPassword": {
+      "title": "Resetare Parolă",
+      "success": "Parola a fost resetată cu succes pentru {{name}}",
+      "tempPassword": "Parola temporară este:",
+      "note": "Vă rugăm să transmiteți această parolă utilizatorului în mod securizat. La următoarea autentificare, utilizatorul va fi rugat să își schimbe parola."
+    },
+    "errors": {
+      "resetPasswordError": "A apărut o eroare la resetarea parolei"
     }
   },
   "footer": {

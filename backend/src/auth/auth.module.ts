@@ -11,15 +11,22 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { VerificationToken } from './entities/verification-token.entity';
 import { SharedModule } from '../shared/shared.module';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerStorageService } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        ttl: 60, // perioada de timp în secunde
-        limit: 5, // numărul maxim de încercări permise
-      }),
+      imports: [ConfigModule],
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [{
+          ttl: configService.get('THROTTLE_TTL', 60),
+          limit: configService.get('THROTTLE_LIMIT', 5),
+        }],
+        storage: new ThrottlerStorageService(),
+        ignoreUserAgents: []
+      })
     }),
     TypeOrmModule.forFeature([User, RefreshToken, VerificationToken]),
     PassportModule,

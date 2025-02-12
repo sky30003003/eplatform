@@ -1,9 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import * as csurf from 'csurf';
-import { AppModule } from './app.module';
 import helmet from 'helmet';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,20 +13,11 @@ async function bootstrap() {
   
   // CORS configuration
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
-  
-  // CSRF protection
-  app.use(csurf({
-    cookie: {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production'
-    }
-  }));
   
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({

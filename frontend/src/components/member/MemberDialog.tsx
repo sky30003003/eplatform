@@ -31,7 +31,7 @@ export function MemberDialog({
 
   return (
     <BaseDialog
-      isOpen={open}
+      open={open}
       onClose={onClose}
       onSuccess={onSuccess}
     >
