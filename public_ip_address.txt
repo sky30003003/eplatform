@@ -1,0 +1,22 @@
+130.61.13.226
+
+Username: ubuntu
+
+
+
+MySQL:
+
+ Username: root
+ Password: Sky30003003!
+
+ Username: eplatform_user
+ Password: Sky30003003!
+
+
+ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sky30003003!';
+
+CREATE DATABASE eplatform;
+CREATE USER 'eplatform_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sky30003003!';
+GRANT ALL PRIVILEGES ON eplatform.* TO 'eplatform_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;

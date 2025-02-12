@@ -13,11 +13,18 @@ dist/
 out/
 
 # Environment files
-.env
+/backend/.env
+/frontend/.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Keep environment templates
+!/deployment/config/**/*.env
+
+# Deployment backups
+/deployment/config/backups/
 
 # IDE
 .idea/
