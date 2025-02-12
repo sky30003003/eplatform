@@ -44,7 +44,15 @@ export const OrganizationForm = ({ organization, onSubmit, onCancel }: Organizat
     },
     validationSchema,
     onSubmit: (values) => {
-      onSubmit(values);
+      console.log('Form values:', values);
+      const submitData = organization ? values : {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        companyCode: values.companyCode
+      };
+      console.log('Data to submit:', submitData);
+      onSubmit(submitData);
     },
   });
 

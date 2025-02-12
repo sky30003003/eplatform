@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Logger } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -10,12 +10,25 @@ import { UserType } from '../users/entities/user.entity';
 @Controller('organizations')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class OrganizationsController {
+  private readonly logger = new Logger(OrganizationsController.name);
+
   constructor(private readonly organizationsService: OrganizationsService) {}
 
   @Post()
   @Roles(UserType.SUPERADMIN)
   create(@Body() createOrganizationDto: CreateOrganizationDto) {
-    return this.organizationsService.create(createOrganizationDto);
+    this.logger.debug('Request to create organization received');
+    this.logger.debug('Request body:', JSON.stringify(createOrganizationDto, null, 2));
+    
+    try {
+      return this.organizationsService.create(createOrganizationDto);
+    } catch (error) {
+      this.logger.error('Error creating organization:', error);
+      if (error?.response?.message) {
+        this.logger.error('Validation errors:', error.response.message);
+      }
+      throw error;
+    }
   }
 
   @Get()

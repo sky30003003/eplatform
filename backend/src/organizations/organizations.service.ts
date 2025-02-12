@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './entities/organization.entity';
@@ -9,6 +9,8 @@ import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class OrganizationsService {
+  private readonly logger = new Logger(OrganizationsService.name);
+
   constructor(
     @InjectRepository(Organization)
     private organizationsRepository: Repository<Organization>,
@@ -17,8 +19,17 @@ export class OrganizationsService {
   ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
-    const organization = this.organizationsRepository.create(createOrganizationDto);
-    return this.organizationsRepository.save(organization);
+    try {
+      this.logger.debug('Creating organization with data:', createOrganizationDto);
+      const organization = this.organizationsRepository.create(createOrganizationDto);
+      this.logger.debug('Created organization entity:', organization);
+      const savedOrg = await this.organizationsRepository.save(organization);
+      this.logger.debug('Saved organization:', savedOrg);
+      return savedOrg;
+    } catch (error) {
+      this.logger.error('Error creating organization:', error);
+      throw error;
+    }
   }
 
   async findAll(userType: UserType, organizationId?: string): Promise<Organization[]> {

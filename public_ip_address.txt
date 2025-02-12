@@ -1,22 +1,41 @@
-130.61.13.226
+130.162.56.21
 
 Username: ubuntu
 
 
+arcisoancea@noancea-mac-2 ePlatform % python3 deployment/scripts/generate_credentials.py
+✅ Credențialele pentru development au fost actualizate
+✅ Credențialele pentru production au fost actualizate
 
-MySQL:
+⚠️  IMPORTANT: Salvați aceste credențiale într-un loc sigur!
 
- Username: root
- Password: Sky30003003!
+Credențiale Development:
+JWT_SECRET: DKb{UAXbr?#O'K;.3q2`G?L9uSO0j`P"
+DB_PASSWORD: GLGG@*U7m9*5tprf
 
- Username: eplatform_user
- Password: Sky30003003!
+Credențiale Production:
+JWT_SECRET: ==@[Kxn)smOt%}v'DS?vGT%-Ll~M(Kd13;]l,k9%6Sp,!7UKL.BcCK5pxlm-)|V_
+DB_PASSWORD: cdu61Aejkz!BWMQtfI83NGcNEc#7GueG
 
 
- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sky30003003!';
+parola cand am setat mysql via oracle console:
+user admin
+parola: Sky30003003!
 
-CREATE DATABASE eplatform;
-CREATE USER 'eplatform_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sky30003003!';
-GRANT ALL PRIVILEGES ON eplatform.* TO 'eplatform_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+Private IP address: 10.0.2.142
+Internal FQDN: mysqldb.sub02111252291.eplatformvcn.oraclevcn.com
+
+Ar trebui să poți acum să te loghezi în aplicație cu:
+Email: admin@eplatform.com
+Parola: Admin123!@#
+
+Acum site-ul funcționează pentru că:
+Am adăugat utilizatorul www-data la grupul ubuntu
+Am setat permisiunile corecte (750) care permit:
+Proprietarului (www-data) drepturi complete (7 = rwx)
+Grupului (www-data) drepturi de citire și executare (5 = r-x)
+Nimănui altcuiva (0 = ---)
+Pentru referință viitoare, dacă mai faci deploy-uri, asigură-te că:
+Păstrezi aceleași permisiuni pentru directorul dist
+Folosești același utilizator (www-data) pentru fișierele statice
+Menții aceleași setări în configurația Nginx

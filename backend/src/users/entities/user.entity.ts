@@ -63,8 +63,8 @@ export class User {
   @Column({ default: false })
   isEmailVerified: boolean;
 
-  @Column({ default: true })
-  isFirstLogin: boolean;
+  @Column({ nullable: true, default: true })
+  isFirstLogin?: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

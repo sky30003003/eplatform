@@ -8,8 +8,8 @@ import { EmailProcessor } from './email.processor';
     BullModule.registerQueue({
       name: 'email',
       redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: Number(process.env.REDIS_PORT) || 6379,
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
       },
       defaultJobOptions: {
         attempts: 3,

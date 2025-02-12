@@ -19,7 +19,7 @@ error() {
 source ./deployment/config/production/backend.env
 
 # Verificare endpoint backend health
-BACKEND_URL="http://localhost:${PORT}/health"
+BACKEND_URL="http://${BACKEND_HOST:-localhost}:${PORT}/health"
 log "Verificare backend health la ${BACKEND_URL}..."
 
 RETRY_COUNT=0

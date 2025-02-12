@@ -6,13 +6,16 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+# Încărcare variabile de mediu
+source .env
+
 # Configurare
-BACKEND_URL="https://api.eplatform.yourdomain.com/health"
-FRONTEND_URL="https://eplatform.yourdomain.com"
-DB_HOST="localhost"
-DB_PORT="5432"
-REDIS_HOST="localhost"
-REDIS_PORT="6379"
+BACKEND_URL="${API_URL}/health"
+FRONTEND_URL="${FRONTEND_URL}"
+DB_HOST="${DB_HOST}"
+DB_PORT="${DB_PORT}"
+REDIS_HOST="${REDIS_HOST}"
+REDIS_PORT="${REDIS_PORT}"
 
 # Funcție pentru verificarea unui serviciu HTTP
 check_http() {

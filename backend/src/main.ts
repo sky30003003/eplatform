@@ -12,11 +12,15 @@ async function bootstrap() {
   app.use(cookieParser());
   
   // CORS configuration
+  const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    ...(process.env.ADDITIONAL_ORIGINS ? process.env.ADDITIONAL_ORIGINS.split(',') : [])
+  ];
+  
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
   });
   
   // Global validation pipe
