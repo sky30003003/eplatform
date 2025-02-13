@@ -88,4 +88,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Nest.js specific
 /dist
-/build 
+/build private.key
+public.pub
+public_ip_address.txt
+public_ip_address.md
