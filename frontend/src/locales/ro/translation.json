@@ -24,7 +24,7 @@
     "members": "Membri"
   },
   "dashboard": {
-    "welcome": "Bine ai venit, {{name}}!",
+    "welcome": "Bun venit, {{name}}!",
     "cards": {
       "pendingDocuments": {
         "title": "Documente în așteptare",
