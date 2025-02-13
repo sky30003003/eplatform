@@ -51,11 +51,24 @@ confirm() {
     esac
 }
 
-# Verifică existența cheii SSH
+# Verifică existența cheii SSH și permisiunile
 if [ ! -f "$SSH_KEY" ]; then
     log "❌ Cheia SSH nu există: $SSH_KEY" "$RED"
     log "Te rog să specifici calea corectă către cheia SSH în variabila SSH_KEY" "$YELLOW"
     exit 1
+fi
+
+# Verifică și corectează permisiunile cheii SSH
+current_perms=$(stat -f %Lp "$SSH_KEY")
+if [ "$current_perms" != "600" ]; then
+    log "Permisiuni incorecte pentru cheia SSH ($current_perms). Se corectează..." "$YELLOW"
+    chmod 600 "$SSH_KEY"
+    if [ $? -eq 0 ]; then
+        log "✓ Permisiuni corectate pentru cheia SSH" "$GREEN"
+    else
+        log "❌ Nu s-au putut corecta permisiunile pentru cheia SSH" "$RED"
+        exit 1
+    fi
 fi
 
 # Start deployment
@@ -148,7 +161,7 @@ if [ $DEPLOY_STATUS -eq 0 ]; then
     log "Backend: https://eplatform.ro/api" "$GREEN"
     
     # Afișare ultimele log-uri
-    log "\n📋 Ultimele log-uri:" "$YELLOW"
+    log "\n�� Ultimele log-uri:" "$YELLOW"
     remote_command "pm2 logs --lines 10"
 else
     log "❌ Deployment eșuat!" "$RED"
