@@ -48,7 +48,35 @@ sed -i.bak \
     -e "s/eplatform.yourdomain.com/$DOMAIN/" \
     backend.env
 
-echo -e "${GREEN}✓ Frontend configuration updated${NC}"
+# Update Nginx configuration with domain
+sed -i.bak \
+    -e "s/eplatform.ro/$DOMAIN/" \
+    nginx.conf
+
+# Setup Nginx
+echo -e "\n${GREEN}Setting up Nginx configuration...${NC}"
+sudo cp nginx.conf /etc/nginx/sites-available/eplatform
+sudo ln -sf /etc/nginx/sites-available/eplatform /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
+# Setup PM2
+echo -e "\n${GREEN}Setting up PM2 configuration...${NC}"
+# Install required global packages
+sudo npm install -g pm2 http-server
+
+# Copy ecosystem config
+cp ecosystem.config.js ../../
+
+# Set correct permissions
+sudo chown -R www-data:www-data /var/www/eplatform
+sudo chmod -R 755 /var/www/eplatform
+sudo usermod -a -G www-data ubuntu
+
+# Start applications
+pm2 delete all || true
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
 
 # Cleanup backup files
 rm *.bak

@@ -26,6 +26,18 @@ out/
 # Deployment backups
 /deployment/config/backups/
 
+# Security files
+*.key
+*.pub
+private.key
+public.pub
+public_ip_address.txt
+**/jwt/*.key
+**/jwt/*.pub
+**/ssl/*.key
+**/ssl/*.pem
+**/ssl/*.crt
+
 # IDE
 .idea/
 .vscode/*
