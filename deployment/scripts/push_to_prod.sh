@@ -11,6 +11,15 @@ PROD_SERVER="ubuntu@130.162.56.21"
 DEPLOY_PATH="/var/www/eplatform/deploy"
 BACKUP_PATH="/var/www/eplatform/backups"
 LOG_FILE="deployment_$(date +%Y%m%d_%H%M%S).log"
+SSH_KEY="$(pwd)/private.key"  # Actualizat path-ul către cheia din rădăcina proiectului
+
+# Dezactivare pager pentru git
+export GIT_PAGER=cat
+
+# Funcție pentru SSH cu cheie specificată
+remote_command() {
+    ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $PROD_SERVER "$1"
+}
 
 # Funcție pentru logging
 log() {
@@ -42,6 +51,13 @@ confirm() {
     esac
 }
 
+# Verifică existența cheii SSH
+if [ ! -f "$SSH_KEY" ]; then
+    log "❌ Cheia SSH nu există: $SSH_KEY" "$RED"
+    log "Te rog să specifici calea corectă către cheia SSH în variabila SSH_KEY" "$YELLOW"
+    exit 1
+fi
+
 # Start deployment
 log "🚀 Începere deployment..." "$YELLOW"
 
@@ -52,9 +68,9 @@ if [[ -n $(git status -s) ]]; then
     git status -s
     
     if confirm "Vrei să fac commit la aceste modificări?"; then
-        # Arată diff-ul
+        # Arată diff-ul fără pager
         log "\nModificări ce vor fi commise:" "$YELLOW"
-        git diff
+        git --no-pager diff
 
         if confirm "Confirmă că vrei să commit aceste modificări"; then
             # Cere mesajul de commit
@@ -90,18 +106,18 @@ check_status "Verificare git status"
 
 # Creare director pentru backup pe server
 log "Creare director backup pe server..." "$YELLOW"
-ssh $PROD_SERVER "mkdir -p $BACKUP_PATH"
+remote_command "mkdir -p $BACKUP_PATH"
 check_status "Creare director backup"
 
 # Creare backup
 log "Creare backup..." "$YELLOW"
 BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).tar.gz"
-ssh $PROD_SERVER "cd /var/www/eplatform && tar -czf $BACKUP_PATH/$BACKUP_FILE deploy/"
+remote_command "cd /var/www/eplatform && tar -czf $BACKUP_PATH/$BACKUP_FILE deploy/"
 check_status "Backup creat: $BACKUP_FILE"
 
 # Pull și build pe server
 log "Deployment pe server..." "$YELLOW"
-ssh $PROD_SERVER "cd $DEPLOY_PATH && \
+remote_command "cd $DEPLOY_PATH && \
     git pull origin main && \
     npm run install:all && \
     npm run build && \
@@ -119,11 +135,11 @@ if [ $DEPLOY_STATUS -eq 0 ]; then
     
     # Verificare servicii
     log "\nStatus servicii:" "$YELLOW"
-    ssh $PROD_SERVER "pm2 list && echo -e '\nNginx status:' && systemctl status nginx | grep Active"
+    remote_command "pm2 list && echo -e '\nNginx status:' && systemctl status nginx | grep Active"
     
     # Verificare migrări
     log "\nVerificare migrări..." "$YELLOW"
-    ssh $PROD_SERVER "cd $DEPLOY_PATH/backend && npm run migration:run"
+    remote_command "cd $DEPLOY_PATH/backend && npm run migration:run"
     check_status "Migrări verificate"
     
     # URL-uri pentru verificare
@@ -133,11 +149,11 @@ if [ $DEPLOY_STATUS -eq 0 ]; then
     
     # Afișare ultimele log-uri
     log "\n📋 Ultimele log-uri:" "$YELLOW"
-    ssh $PROD_SERVER "pm2 logs --lines 10"
+    remote_command "pm2 logs --lines 10"
 else
     log "❌ Deployment eșuat!" "$RED"
     log "Restaurare din backup..." "$YELLOW"
-    ssh $PROD_SERVER "cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE"
+    remote_command "cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE"
     check_status "Restaurare din backup"
     exit 1
 fi
@@ -150,4 +166,4 @@ log "- Log file: $LOG_FILE" "$GREEN"
 
 # Instrucțiuni pentru rollback
 log "\n⚠️ Pentru rollback, rulează:" "$YELLOW"
-log "ssh $PROD_SERVER \"cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE\"" "$NC" 
+log "ssh -i $SSH_KEY $PROD_SERVER \"cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE\"" "$NC" 
