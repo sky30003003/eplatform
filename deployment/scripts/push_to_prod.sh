@@ -117,16 +117,21 @@ if [[ -n $(git status -s) ]]; then
 fi
 check_status "Verificare git status"
 
-# Creare director pentru backup pe server
+# Creare director pentru backup pe server și setare permisiuni
 log "Creare director backup pe server..." "$YELLOW"
-remote_command "mkdir -p $BACKUP_PATH"
+remote_command "sudo mkdir -p $BACKUP_PATH && sudo chown ubuntu:ubuntu $BACKUP_PATH"
 check_status "Creare director backup"
 
 # Creare backup
 log "Creare backup..." "$YELLOW"
 BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).tar.gz"
-remote_command "cd /var/www/eplatform && tar -czf $BACKUP_PATH/$BACKUP_FILE deploy/"
+remote_command "cd /var/www/eplatform && tar -czf $BACKUP_PATH/$BACKUP_FILE deploy/ || true"
 check_status "Backup creat: $BACKUP_FILE"
+
+# Verificare și configurare Git pe server
+log "Configurare Git pe server..." "$YELLOW"
+remote_command "sudo chown -R ubuntu:ubuntu $DEPLOY_PATH && git config --global --add safe.directory $DEPLOY_PATH"
+check_status "Configurare Git"
 
 # Pull și build pe server
 log "Deployment pe server..." "$YELLOW"
@@ -137,9 +142,13 @@ remote_command "cd $DEPLOY_PATH && \
     cp deployment/config/production/ecosystem.config.js . && \
     pm2 delete all || true && \
     pm2 start ecosystem.config.js && \
-    sudo cp deployment/config/production/nginx.conf /etc/nginx/sites-available/eplatform && \
-    sudo nginx -t && \
-    sudo systemctl reload nginx"
+    if [ -f deployment/config/production/nginx.conf ]; then \
+        sudo cp deployment/config/production/nginx.conf /etc/nginx/sites-available/eplatform && \
+        sudo nginx -t && \
+        sudo systemctl reload nginx; \
+    else \
+        echo 'Fișierul nginx.conf nu există. Se omite configurarea Nginx.'; \
+    fi"
 DEPLOY_STATUS=$?
 
 # Verificare status deployment
@@ -161,13 +170,17 @@ if [ $DEPLOY_STATUS -eq 0 ]; then
     log "Backend: https://eplatform.ro/api" "$GREEN"
     
     # Afișare ultimele log-uri
-    log "\n�� Ultimele log-uri:" "$YELLOW"
+    log "\n📋 Ultimele log-uri:" "$YELLOW"
     remote_command "pm2 logs --lines 10"
 else
     log "❌ Deployment eșuat!" "$RED"
-    log "Restaurare din backup..." "$YELLOW"
-    remote_command "cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE"
-    check_status "Restaurare din backup"
+    if [ -f "$BACKUP_PATH/$BACKUP_FILE" ]; then
+        log "Restaurare din backup..." "$YELLOW"
+        remote_command "cd /var/www/eplatform && tar -xzf $BACKUP_PATH/$BACKUP_FILE"
+        check_status "Restaurare din backup"
+    else
+        log "Nu există backup pentru restaurare" "$RED"
+    fi
     exit 1
 fi
 
